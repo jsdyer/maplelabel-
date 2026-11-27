@@ -1,136 +1,197 @@
-#!/usr/bin/env python3
-"""Build a browser tool using Python's standard library; no network required."""
+"""Render the catalogue, comparison pages and scoped sitemap offline."""
+from datetime import date
 from html import escape
 import json
 from pathlib import Path
 import re
 import shutil
-import tempfile
+from tempfile import TemporaryDirectory
 from urllib.parse import urlsplit
+from xml.etree import ElementTree as ET
 
 from search_metadata import add_search_metadata
 
 ROOT = Path(__file__).resolve().parents[1]
-SLUG = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
+BASE = 'https://coolcode.ca/maplelabel/'
+SLUG = re.compile(r'[a-z0-9]+(?:-[a-z0-9]+)*')
+FIELDS = [('inputs', 'Ingredients or materials'), ('processing', 'Processing or manufacturing'), ('ownership', 'Company ownership')]
 
 
-def metadata(root=ROOT):
-    tool = json.loads((root / "tool.json").read_text(encoding="utf-8"))
-    required = {"id", "title", "description", "category", "tags", "icon", "url", "source", "hosting", "access", "data_info"}
-    if not isinstance(tool, dict) or set(tool) != required:
-        raise ValueError("tool.json has missing or unknown fields")
-    for key in required - {"tags", "data_info"}:
-        if not isinstance(tool[key], str) or not tool[key].strip():
-            raise ValueError(f"tool.json: {key} must be a nonempty string")
-    if not SLUG.fullmatch(tool["id"]) or tool["url"] != f'/{tool["id"]}/' or tool["hosting"] != "project":
-        raise ValueError("Use a lowercase tool ID, matching /id/ URL and project hosting")
-    if not isinstance(tool["tags"], list) or not all(isinstance(t, str) and t.strip() for t in tool["tags"]):
-        raise ValueError("tags must be an array of nonempty strings")
-    if tool["access"] != "browser":
-        raise ValueError("This starter produces an immediately usable browser tool; use access: browser")
-    info = tool["data_info"]
-    if (not isinstance(info, dict) or info.get("mode") not in ("snapshot", "live", "local", "reference", "mixed")
-            or not isinstance(info.get("detail"), str) or not info["detail"].strip()):
-        raise ValueError("Describe the tool's inputs for its homepage card in data_info")
-    guide = (root / "README.md").read_text(encoding="utf-8")
-    begin, end = "<!-- coolcode:guide -->", "<!-- /coolcode:guide -->"
-    if guide.count(begin) != 1 or guide.count(end) != 1 or not guide.partition(begin)[2].partition(end)[0].strip() or guide.index(begin) > guide.index(end):
-        raise ValueError("Include a practical README note between the coolcode:guide markers")
-    source = urlsplit(tool["source"])
-    if source.scheme != "https" or not source.hostname or source.username is not None or any(c.isspace() for c in tool["source"]) or "\\" in tool["source"]:
-        raise ValueError("source must be an HTTPS URL without credentials or whitespace")
-    return tool
+def e(value):
+    return escape(str(value), quote=True)
 
 
-def read_common_pages(root):
-    directory = root / "common-pages"
-    path = directory / "manifest.json"
-    if not path.exists():
-        return []
-    if directory.is_symlink() or path.is_symlink():
-        raise ValueError("Common-use definitions must not be symlinks")
-    entries = json.loads(path.read_text(encoding="utf-8"))
-    if not isinstance(entries, list):
-        raise ValueError("Expected a list of common-use pages")
-    seen = set()
-    for entry in entries:
-        if not isinstance(entry, dict) or set(entry) != {"slug", "title", "description"}:
-            raise ValueError("Each common-use page needs a slug, title and description")
-        if not all(isinstance(v, str) and v.strip() for v in entry.values()):
-            raise ValueError("Empty or invalid common-use page field")
-        slug = entry["slug"]
-        if not SLUG.fullmatch(slug) or slug in seen:
-            raise ValueError("Common-use slugs must be safe, unique directory names")
-        seen.add(slug)
-    return entries
+def read(path):
+    return json.loads(path.read_text(encoding='utf-8'))
 
 
-def render_page(page, tool, asset_prefix):
-    page = page.replace("{{ASSET_PREFIX}}", asset_prefix)
-    for token, key in {"TITLE": "title", "DESCRIPTION": "description", "TOOL_ID": "id", "SOURCE_URL": "source"}.items():
-        placeholder = "{{" + token + "}}"
-        if placeholder not in page:
-            raise ValueError(f"Missing template placeholder: {placeholder}")
-        page = page.replace(placeholder, escape(tool[key], quote=True))
-    slug = tool["id"]
-    on_coolcode = (
-        slug != "coolcode-tool-template"
-        and tool["source"].rstrip("/") == f"https://github.com/jsdyer/{slug}"
-    )
-    reporting = {
-        "{{VISIT_COUNTER}}": '<script defer src="/assets/tool-metrics.js" referrerpolicy="no-referrer"></script>',
-        "{{ISSUE_LINK}}": f'<a href="https://coolcode.ca/report/?tool={slug}" referrerpolicy="no-referrer">Report an issue</a>',
-    }
-    for placeholder, markup in reporting.items():
-        if placeholder not in page:
-            raise ValueError(f"Missing template placeholder: {placeholder}")
-        page = page.replace(placeholder, markup if on_coolcode else "")
-    if re.search(r"\{\{[A-Z_]+\}\}", page):
-        raise ValueError("Unresolved template placeholder in web/index.html")
-    return add_search_metadata(page, tool)
+def a(href, label, cls=''):
+    return f'<a href="{e(href)}" class="{e(cls)}">{e(label)}</a>'
+
+
+def by_id(rows):
+    items = {row['id']: row for row in rows}
+    if len(items) != len(rows) or not all(SLUG.fullmatch(k) for k in items):
+        raise ValueError('Source, rule and product IDs must be unique URL-safe names')
+    return items
+
+
+def validate(data, status):
+    products = by_id(data['products'])
+    if {'label-guide','quebec-cheese-and-coffee'} & set(products):
+        raise ValueError('Product ID collides with an editorial route')
+    rules = by_id(data['rules'])
+    sources = by_id(data['sources'])
+    date.fromisoformat(data['reviewed_at'])
+    if not products or len(products) != status['product_count'] or data['reviewed_at'] != status['reviewed_at']:
+        raise ValueError('Catalogue and status disagree. Run the source check after editorial changes.')
+    for field in ['last_attempt','checked_at']:
+        if status.get(field):
+            date.fromisoformat(status[field])
+    for source in sources.values():
+        url = urlsplit(source['url'])
+        if not url.hostname or url.scheme != 'https' or url.username or not source['anchors'] or source['mode'] not in ('scheduled','editorial'):
+            raise ValueError('Invalid source record')
+    if not set(status['needs_review']).issubset(sources):
+        raise ValueError('Unknown source check result')
+    for rule in rules.values():
+        if rule['source'] and rule['source'] not in sources:
+            raise ValueError('A rule has no supporting source')
+    for r in products.values():
+        if not all(str(r.get(key) or '').strip() for key in ('name','brand','category','claim','summary')):
+            raise ValueError('Incomplete product identification')
+        if r['rule'] not in rules or not r['sources'] or not set(r['sources']).issubset(sources):
+            raise ValueError('Unresolved product evidence')
+        if not r['related'] or not set(r['related']).issubset(products) or r['id'] in r['related'] or len(set(r['related'])) != len(r['related']):
+            raise ValueError('Unresolved related product')
+    return products,rules,sources
+
+
+def profile_url(r): return 'records/' + r['id'] + '/'
+
+
+def info(label, value):
+    return f'<div><dt>{e(label)}</dt><dd>{e(value or "Not specified in the cited sources.")}</dd></div>'
+
+
+def card(r, root):
+    location = r['province'] or 'Canada · province unspecified'
+    return f'''<article class="card"><div class="card-meta">{e(r["category"])} · {e(location)}</div>
+<h3>{a(root+profile_url(r),r["name"])}</h3><p class="maker">{e(r["brand"])}</p>
+<p><strong>{e(r["claim"])}</strong></p><p>{e(r["summary"])}</p></article>'''
+
+
+def links(r, sources, status):
+    result=[]
+    for key in r['sources']:
+        s = sources[key]
+        mode = 'Editorial review' if s['mode']=='editorial' else 'Scheduled text check'
+        if key in status['needs_review']:
+            mode += ' · needs review'
+        result.append(f'<li>{a(s["url"],s["name"])} <small>{e(mode)}</small></li>')
+    return '<ul class="sources">' + ''.join(result) + '</ul>'
 
 
 def build(root=ROOT):
-    tool = metadata(root)
-    output = root / "dist"
-    if output.is_symlink():
-        raise ValueError("dist must not be a symlink")
-    web = root / "web"
-    if web.is_symlink() or any(p.is_symlink() for p in web.rglob("*")):
-        raise ValueError("web/ must not contain symlinks")
-    with tempfile.TemporaryDirectory(prefix="coolcode-tool-") as temporary:
-        stage = Path(temporary) / "site"
-        shutil.copytree(web, stage)
-        index = stage / "index.html"
-        page = index.read_text(encoding="utf-8")
-        common = read_common_pages(root)
-        links = ' · '.join(f'<a href="./{entry["slug"]}/">{escape(entry["title"])}</a>' for entry in common)
-        marker = "<!-- common-use-links -->"
-        if common and marker not in page:
-            raise ValueError("Add the common-use-links marker to the main page")
-        page = page.replace(marker, f'<nav aria-label="Common uses">{links}</nav>' if common else "")
-        index.write_text(render_page(page, tool, "./"), encoding="utf-8")
-        for entry in common:
-            directory = stage / entry["slug"]
-            if directory.exists():
-                raise ValueError(f"Common-use route collides with web content: {entry['slug']}")
-            directory.mkdir()
-            definition = root / "common-pages" / (entry["slug"] + ".html")
-            if definition.is_symlink():
-                raise ValueError("Common-use HTML must not be a symlink")
-            preset = dict(tool, title=entry["title"], description=entry["description"],
-                          url=f'{tool["url"]}{entry["slug"]}/')
-            body = render_page(definition.read_text(encoding="utf-8"), preset, "../")
-            (directory / "index.html").write_text(body, encoding="utf-8")
-        (stage / ".nojekyll").touch()
-        if output.exists():
-            shutil.rmtree(output)
-        shutil.copytree(stage, output)
-    print(f'Built dist/ for {tool["id"]}')
+    tool = read(root/'tool.json')
+    if tool['url'] != '/maplelabel/' or tool['result_directory']['path'] != 'records/':
+        raise ValueError('Expected native Maple Label routes')
+    data = read(root/'web/data/catalogue.json')
+    status = read(root/'web/data/status.json')
+    products,rules,sources = validate(data,status)
+    first = products['oka-original']
+    second = products['balanced-espresso']
+    with TemporaryDirectory() as scratch:
+        stage=Path(scratch)/'dist'
+        web = root/'web'
+        if web.is_symlink() or any(p.is_symlink() for p in web.rglob('*')):
+            raise ValueError('Unexpected symlink in web assets')
+        shutil.copytree(web,stage)
+        template=(stage/'index.html').read_text()
+        paths=[]
+
+        def publish(path,title,heading,desc,body,home=False):
+            prefix='../'*path.count('/') if path else './'
+            nav=a(prefix,'Maple Label','brand') + '<div>'+a(prefix+'records/','Browse records')+a(prefix+'records/label-guide/','Label guide')+'</div>'
+            footer=a('https://coolcode.ca/','CoolCode.ca')+a(prefix+'data/catalogue.json','Download the data')+a('https://coolcode.ca/labelcompare/','Compare nutrition labels')+a('https://coolcode.ca/report/?tool=maplelabel','Report a correction')
+            head = '' if home else f'<link rel="canonical" href="{BASE+path}"><meta property="og:title" content="{e(title)}"><meta property="og:description" content="{e(desc)}">'
+            values={'TITLE':e(title)+' · Maple Label','DESC':e(desc),'PREFIX':prefix,'NAV':nav,'FOOTER':footer,'BODY':body,'HEADING':e(heading),'META':head,'INTRO':e(desc),'SCRIPT':'<script type="module" src="./app.mjs"></script>' if home else ''}
+            html=template
+            for k,v in values.items():html=html.replace('{{'+k+'}}',v)
+            if home:
+                dataset={'@type':'Dataset','@id':BASE+'#products','name':tool['dataset']['title'],'description':tool['data_info']['detail'],'isBasedOn':[sources[k]['url'] for k in ('cfia','bureau')],'distribution':{'@type':'DataDownload','contentUrl':BASE+tool['dataset']['file'],'encodingFormat':'application/json'}}
+                html=add_search_metadata(html,tool,category='ReferenceApplication',datasets=[dataset])
+            else:
+                paths.append(path)
+            folder=stage/path
+            folder.mkdir(exist_ok=True,parents=True)
+            (folder/'index.html').write_text(html,encoding='utf-8')
+
+        def field_list(r):
+            return '<dl class="facts">'+''.join(info(label,r[key]) for key,label in FIELDS)+'</dl>'
+
+        dataset_date=e(data['reviewed_at'])
+        summary=f'{len(products)} product records · Evidence reviewed {dataset_date}'
+        checked=e(status['checked_at']) if status.get('checked_at') else 'awaiting a complete check'
+        context=f'<p class="date">Evidence reviewed {dataset_date}. Last successful automated check of monitored wording: {checked}. Sources marked editorial are revisited separately.</p>'
+        if status['needs_review']:
+            context+=f'<p class="notice">{len(status["needs_review"])} monitored source(s) need review after the {e(status["last_attempt"])} check. The previous reviewed records remain available.</p>'
+        feature='<section class="comparison" id="starting-example"><h2>Two Québec labels, two different promises</h2><div class="pair">'+''.join(card(p,'./') for p in (first,second))+'</div>'+a('records/quebec-cheese-and-coffee/','Read the side-by-side findings','action')+'</section>'
+        filters='''<section id="finder" hidden><h2>Find a product</h2><form id="filters" hidden><label class="search">Product or brand<input type="search" id="query" placeholder="Try apple juice, maple or Rogers"></label><label>Province<select id="province"></select></label><label>Category<select id="category"></select></label><label>Claim or program<select id="rule"></select></label><button type="reset">Clear filters</button></form><div id="results" hidden><p id="count" role="status"></p><ul id="matches"></ul></div></section>
+<section id="comparison" hidden><h2>Compare origin evidence</h2><div id="pickers"><label>First product<select id="product"></select></label><label>Compare with<select id="compare"></select></label></div><div class="pair" id="comparison-cards"></div></section>'''
+        intro='Find out where a product’s ingredients came from, where it was made and what its origin claim actually covers.'
+        opening='<p class="opening-links">'+a('./records/quebec-cheese-and-coffee/','Compare OKA cheese and Laval-roasted coffee','action')+' '+a('./records/','Browse all '+str(len(products))+' records')+'</p>'
+        publish('',tool['task_label'],'Made in Canada finder',intro,opening+filters+feature+f'<p class="date">{summary}.</p>'+context,True)
+        groupings={}
+        for r in products.values():groupings.setdefault(r['category'],[]).append(r)
+        body='<p>'+a('../','Search and compare products','action')+'</p>'+a('label-guide/','Read the label definitions')
+        body+=' · '+a('quebec-cheese-and-coffee/','Québec cheese and coffee compared')
+        for category,rows in sorted(groupings.items()):
+            body+=f'<section><h2>{e(category)}</h2><div class="cards">'+''.join(card(row,'../') for row in rows)+'</div></section>'
+        publish('records/','Canadian product-origin records by category','Product-origin records',f'Browse {len(products)} named products by category. Each record links to the producer or program that published the claim.',body+context)
+        compare_body='<div class="pair">'
+        for item in (first,second):
+            p=products[item['id']]
+            compare_body+='<article class="card"><h2>'+a('../'+p['id']+'/',p['name'])+'</h2><p class="origin-label">'+e(p['claim'])+'</p>'+field_list(p)+links(p,sources,status)+'</article>'
+        compare_body+='</div><p>'+a('../../?product='+first['id']+'&compare='+second['id']+'#comparison','Compare these or choose other products','action')+'</p>'+context
+        publish('records/quebec-cheese-and-coffee/','OKA cheese and Laval-roasted espresso compared','What is local in cheese and coffee?','OKA Original’s Québec certification covers its main ingredients. Hortus espresso’s certification covers processing, and its listing identifies the roasting location as Laval.',compare_body)
+        definitions=''
+        for rule in rules.values():
+            linked=[p for p in products.values() if p['rule']==rule['id']]
+            definitions+=f'<section id="{rule["id"]}"><h2>{e(rule["name"])}</h2><p>{e(rule["description"])}</p>'
+            if rule['source']:
+                s=sources[rule['source']]
+                definitions+='<p>'+a(s['url'],s['name'])+'</p>'
+            if linked:
+                definitions+='<p>Product records · '+ ' · '.join(a('../../'+profile_url(p),p['name']) for p in linked)+'</p>'
+            definitions+='</section>'
+        definitions+='<section><h2>Does a barcode identify the country?</h2><p>A GS1 prefix identifies the organisation that allocated the number. The product can be made elsewhere. Use a barcode to identify an item, then look for a product-specific origin source.</p>'+a(sources['gs1']['url'],sources['gs1']['name'])+'</section>'
+        publish('records/label-guide/','Product of Canada and Made in Canada label definitions','What Canadian origin labels mean','Food rules and non-food guidance use different tests. Provincial programs also set their own requirements.',definitions+context)
+        for r in products.values():
+            rule=rules[r['rule']]
+            body=f'<p class="origin-label">{e(r["claim"])}</p><p class="meta">{e(r["brand"])} · {e(r["category"])} · {e(r["province"] or "Canada · province unspecified")}</p>'
+            body+='<section><h2>What the sources establish</h2>'+field_list(r)+'</section>'
+            body+=f'<section><h2>{e(rule["name"])}</h2><p>{e(rule["description"])}</p>{a("../label-guide/#"+rule["id"],"See how this label compares with other claims")}</section>'
+            body+='<section><h2>Read the source evidence</h2>'+links(r,sources,status)+context+'</section>'
+            body+='<section><h2>Compare related records</h2><ul class="related">'
+            for key in r['related']:
+                p=products[key]
+                body+=f'<li>{a("../"+key+"/",p["name"])}<span>{e(p["claim"])}</span>{a("../../?product="+r["id"]+"&compare="+key+"#comparison","Compare their evidence")}</li>'
+            body+='</ul>'
+            if r in (first,second):
+                body+='<p>'+a('../quebec-cheese-and-coffee/','Read both Québec labels side by side')+'</p>'
+            body+='</section><p>'+a('../../?product='+r['id']+'#comparison','Open this product in the finder')+' · '+a('../','All product records')+'</p>'
+            publish(profile_url(r),r['name']+' · '+r['claim'],r['name'],r['summary'],body)
+        sitemap=ET.Element('urlset',xmlns='http://www.sitemaps.org/schemas/sitemap/0.9')
+        for path in sorted(paths):
+            ET.SubElement(ET.SubElement(sitemap,'url'),'loc').text=BASE+path
+        ET.ElementTree(sitemap).write(stage/'sitemap.xml',encoding='utf-8',xml_declaration=True)
+        (stage/'.nojekyll').touch()
+        dest=root/'dist'
+        if dest.is_symlink():raise ValueError('Unexpected dist symlink')
+        if dest.exists():shutil.rmtree(dest)
+        shutil.copytree(stage,dest)
+    print(f'{len(products)} curated products, {len(paths)} sitemap records')
 
 
-if __name__ == "__main__":
-    try:
-        build()
-    except (OSError, ValueError) as exc:
-        raise SystemExit(f"Build failed: {exc}")
+if __name__=='__main__':build()

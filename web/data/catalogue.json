@@ -1,0 +1,483 @@
+{
+  "reviewed_at": "2026-11-27",
+  "products": [
+    {
+      "id": "oka-original",
+      "name": "OKA Original",
+      "brand": "Agropur Cooperative",
+      "province": "Quebec",
+      "category": "Dairy",
+      "rule": "qc-grown",
+      "claim": "Aliments du Québec",
+      "summary": "The certification covers the cheese’s main ingredients as well as key processing and packaging in Québec. The entry lists 190 g and 2.5 kg sizes.",
+      "inputs": "The program requires all main ingredients from Québec and at least 85% Québec ingredients overall.",
+      "processing": "Key processing and packaging in Québec under this certification.",
+      "ownership": null,
+      "sources": [
+        "oka",
+        "qc"
+      ],
+      "related": [
+        "balanced-espresso",
+        "salish-apple-juice"
+      ]
+    },
+    {
+      "id": "balanced-espresso",
+      "name": "Balanced Espresso Coffee Beans",
+      "brand": "Hortus / Mayrand",
+      "province": "Quebec",
+      "category": "Drinks",
+      "rule": "qc-prepared",
+      "claim": "Aliments préparés au Québec",
+      "summary": "The listing identifies Laval as the roasting location for this 1 kg coffee. Its certification describes where it was processed.",
+      "inputs": "The source describes high-altitude cultivation but gives no country of origin for the beans.",
+      "processing": "Slow-roasted in Laval, Québec.",
+      "ownership": null,
+      "sources": [
+        "espresso",
+        "qc"
+      ],
+      "related": [
+        "oka-original",
+        "blueberry-lemonade"
+      ]
+    },
+    {
+      "id": "salish-apple-juice",
+      "name": "Salish Apple Juice",
+      "brand": "Berrymobile Fruit Distribution",
+      "province": "British Columbia",
+      "category": "Drinks",
+      "rule": "bc",
+      "claim": "100% BC-grown Salish apples",
+      "summary": "The Buy BC product entry identifies the Okanagan as the growing region for the Salish apples in this juice.",
+      "inputs": "The producer’s description identifies 100% B.C.-grown Salish apples from the Okanagan.",
+      "processing": null,
+      "ownership": null,
+      "sources": [
+        "salish",
+        "bc"
+      ],
+      "related": [
+        "blueberry-lemonade",
+        "maple-leaf-bottle"
+      ]
+    },
+    {
+      "id": "blueberry-lemonade",
+      "name": "Cold Pressed Blueberry Lemonade",
+      "brand": "Chasers Fresh Juice",
+      "province": "British Columbia",
+      "category": "Drinks",
+      "rule": "bc",
+      "claim": "Buy BC",
+      "summary": "The listing identifies an Abbotsford cold-pressed juice manufacturer and names blueberry, lemon, filtered water and simple syrup.",
+      "inputs": "The listing names four ingredients. It gives no growing location for the berries or lemons.",
+      "processing": "The program lists Chasers Fresh Juice as a cold-pressed juice manufacturer in Abbotsford, B.C.",
+      "ownership": null,
+      "sources": [
+        "lemonade",
+        "bc"
+      ],
+      "related": [
+        "salish-apple-juice",
+        "balanced-espresso"
+      ]
+    },
+    {
+      "id": "maple-leaf-bottle",
+      "name": "Maple Syrup Leaf Bottle",
+      "brand": "Acadian Maple",
+      "province": "Nova Scotia",
+      "category": "Pantry",
+      "rule": "local",
+      "claim": "Nova Scotia Maple",
+      "summary": "The 100 mL leaf bottle belongs to Acadian Maple’s pure syrup range. A separate maker statement traces that syrup to harvesters in Nova Scotia.",
+      "inputs": "Maple syrup sourced from the sugar woods of Nova Scotia.",
+      "processing": "Acadian Maple describes its role processing Nova Scotia syrup. The bottle listing gives no plant address.",
+      "ownership": "Acadian Maple identifies Authentic Seacoast Company as its acquirer in 2019. This is dated company history.",
+      "sources": [
+        "maple",
+        "maplearea",
+        "mapleowner"
+      ],
+      "related": [
+        "fleur-de-sel",
+        "salish-apple-juice"
+      ]
+    },
+    {
+      "id": "fleur-de-sel",
+      "name": "Fleur de Sel, 90 g",
+      "brand": "South Shore Sea Salt",
+      "province": "Nova Scotia",
+      "category": "Pantry",
+      "rule": "local",
+      "claim": "St. Margaret’s Bay in Nova Scotia",
+      "summary": "South Shore says the seawater comes from St. Margaret’s Bay and describes making its flaky finishing salt in small batches.",
+      "inputs": "Atlantic seawater from St. Margaret’s Bay, Nova Scotia.",
+      "processing": "The producer describes making the salt by hand in small batches.",
+      "ownership": null,
+      "sources": [
+        "salt"
+      ],
+      "related": [
+        "maple-leaf-bottle",
+        "steel-cut-oat-blend"
+      ]
+    },
+    {
+      "id": "steel-cut-oat-blend",
+      "name": "Steel Cut Oat Blend Porridge Oats",
+      "brand": "Rogers Foods",
+      "province": "British Columbia",
+      "category": "Pantry",
+      "rule": "food-product",
+      "claim": "Product of Canada",
+      "summary": "Rogers prints the federal food-origin wording on this blend. Its company page identifies mills in Armstrong and Chilliwack, B.C.",
+      "inputs": "The blend lists oats, wheat bran, oat bran and flaxseed. The food-origin claim covers its significant ingredients.",
+      "processing": "The maker identifies B.C. mills. The product page does not assign this blend to a particular mill.",
+      "ownership": null,
+      "sources": [
+        "rogers",
+        "mills",
+        "cfia"
+      ],
+      "related": [
+        "oka-original",
+        "fleur-de-sel"
+      ]
+    },
+    {
+      "id": "roustan-hockey-sticks",
+      "name": "Hockey Sticks",
+      "brand": "Roustan Hockey",
+      "province": "Ontario",
+      "category": "Sports equipment",
+      "rule": "on",
+      "claim": "Ontario Made",
+      "summary": "Ontario Made lists Roustan’s hockey sticks for teams, retailers and selected brands. The listing covers a product family and supplies no model or barcode.",
+      "inputs": null,
+      "processing": "Ontario Made eligibility requires the registered product’s last substantial transformation to take place in Ontario.",
+      "ownership": null,
+      "sources": [
+        "hockey",
+        "ontario"
+      ],
+      "related": [
+        "harris-hockey-scoreboard",
+        "veritas-block-plane"
+      ]
+    },
+    {
+      "id": "harris-hockey-scoreboard",
+      "name": "Hockey Scoreboard",
+      "brand": "Harris Time",
+      "province": "Ontario",
+      "category": "Sports equipment",
+      "rule": "on",
+      "claim": "Ontario Made",
+      "summary": "Harris Time is named on the program entry for this scoreboard. The entry supplies no model number or origin for its electronics.",
+      "inputs": null,
+      "processing": "Last substantial manufacturing transformation in Ontario under the program’s criteria.",
+      "ownership": null,
+      "sources": [
+        "scoreboard",
+        "ontario"
+      ],
+      "related": [
+        "roustan-hockey-sticks",
+        "veritas-block-plane"
+      ]
+    },
+    {
+      "id": "veritas-block-plane",
+      "name": "Low-Angle Block Plane",
+      "brand": "Veritas / Lee Valley",
+      "province": null,
+      "category": "Hand tools",
+      "rule": "nonfood-made",
+      "claim": "Made in Canada",
+      "summary": "Lee Valley displays this wording beside the named Veritas hand plane. The product page does not disclose the share of Canadian production costs.",
+      "inputs": null,
+      "processing": "The product page identifies Canada. It gives no factory location or imported-parts qualifier beside the displayed claim.",
+      "ownership": "Lee Valley describes its business as family-owned and Canadian. This company statement is a separate source from the country wording on the plane.",
+      "sources": [
+        "veritas",
+        "lee-valley",
+        "bureau"
+      ],
+      "related": [
+        "roustan-hockey-sticks",
+        "steel-cut-oat-blend"
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "id": "qc-grown",
+      "name": "Aliments du Québec",
+      "type": "Québec certification",
+      "description": "At least 85% of ingredients originate in Québec. All main ingredients must come from Québec. Key processing and packaging take place in the province.",
+      "source": "qc"
+    },
+    {
+      "id": "qc-prepared",
+      "name": "Aliments préparés au Québec",
+      "type": "Québec certification",
+      "description": "The product is entirely processed in Québec. Ingredients may come from Québec or elsewhere.",
+      "source": "qc"
+    },
+    {
+      "id": "bc",
+      "name": "Buy BC",
+      "type": "B.C. program",
+      "description": "Eligibility covers products wholly grown, raised or caught in B.C., or products processed and packaged there with at least 51% of direct production costs originating in B.C. The product listing may provide more specific evidence.",
+      "source": "bc"
+    },
+    {
+      "id": "on",
+      "name": "Ontario Made",
+      "type": "Ontario program",
+      "description": "The program registers products whose final substantial manufacturing transformation took place in Ontario. It allows imported components. Registration applies to the listed products.",
+      "source": "ontario"
+    },
+    {
+      "id": "food-product",
+      "name": "Product of Canada · food",
+      "type": "Federal wording",
+      "description": "CFIA describes this claim as requiring Canadian processing and labour and Canadian origin for all significant ingredients. Minor imported ingredients can qualify for exceptions.",
+      "source": "cfia"
+    },
+    {
+      "id": "food-made",
+      "name": "Made in Canada · food",
+      "type": "Federal wording",
+      "description": "CFIA looks for the final substantial transformation in Canada and a qualifier indicating whether the ingredients are imported or both domestic and imported.",
+      "source": "cfia"
+    },
+    {
+      "id": "nonfood-product",
+      "name": "Product of Canada · non-food",
+      "type": "Federal wording",
+      "description": "The Competition Bureau’s guidance considers final substantial transformation in Canada and at least 98% of direct production or manufacturing costs incurred here.",
+      "source": "bureau"
+    },
+    {
+      "id": "nonfood-made",
+      "name": "Made in Canada · non-food",
+      "type": "Federal wording",
+      "description": "The Competition Bureau’s guidance considers final substantial transformation in Canada, at least 51% of direct production costs incurred here and an appropriate qualifier for the claim. A manufacturer’s label alone does not disclose its cost calculation.",
+      "source": "bureau"
+    },
+    {
+      "id": "local",
+      "name": "Producer location statement",
+      "type": "Producer statement",
+      "description": "Read the maker’s exact product and place wording. Geographic details about one ingredient, a process or a range apply only to the scope stated.",
+      "source": null
+    }
+  ],
+  "sources": [
+    {
+      "id": "oka",
+      "name": "Aliments du Québec · OKA Original",
+      "url": "https://alimentsduquebec.com/en/certified-products/dairy-products-and-substitutes/oka-original",
+      "mode": "scheduled",
+      "anchors": [
+        "OKA Original Cheeses Aliments du Québec",
+        "190 g Agropur Cooperative"
+      ]
+    },
+    {
+      "id": "espresso",
+      "name": "Aliments du Québec · Balanced Espresso Coffee Beans",
+      "url": "https://alimentsduquebec.com/en/certified-products/beverages/balanced-espresso-coffee-beans",
+      "mode": "scheduled",
+      "anchors": [
+        "Balanced Espresso Coffee Beans Coffee Aliments préparés au Québec",
+        "Local preparation at Laval",
+        "1000 g"
+      ]
+    },
+    {
+      "id": "qc",
+      "name": "Aliments du Québec · certification rules",
+      "url": "https://alimentsduquebec.com/en/about-us/our-certification-marks",
+      "mode": "scheduled",
+      "anchors": [
+        "at least 85% ingredients of Québec origin",
+        "entirely processed in Québec"
+      ]
+    },
+    {
+      "id": "salish",
+      "name": "Buy BC · Salish Apple juice",
+      "url": "https://buybc.gov.bc.ca/product/juice-salish-apple/",
+      "mode": "scheduled",
+      "anchors": [
+        "100% BC-grown Salish apples from the Okanagan"
+      ]
+    },
+    {
+      "id": "lemonade",
+      "name": "Buy BC · Blueberry Lemonade",
+      "url": "https://buybc.gov.bc.ca/product/cold-pressed-lemonade-blueberry/",
+      "mode": "scheduled",
+      "anchors": [
+        "Cold Pressed Juice: Blueberry Lemonade",
+        "located in Abbotsford BC",
+        "Blueberry, Lemon, Filtered Water, and Simple Syrup"
+      ]
+    },
+    {
+      "id": "bc",
+      "name": "Government of British Columbia · Buy BC product certification",
+      "url": "https://buybc.gov.bc.ca/contact/product-certification/",
+      "mode": "scheduled",
+      "anchors": [
+        "processed and packaged in B.C.",
+        "51% or more of the direct cost"
+      ]
+    },
+    {
+      "id": "maple",
+      "name": "Acadian Maple · Maple Syrup Leaf Bottle",
+      "url": "https://acadianmaple.com/collections/maple-syrup/products/maple-syrup-leaf-bottles",
+      "mode": "scheduled",
+      "anchors": [
+        "Maple Syrup Leaf Bottle",
+        "100mL",
+        "Maple syrup in a maple leaf bottle"
+      ]
+    },
+    {
+      "id": "maplearea",
+      "name": "Acadian Maple · syrup sourcing",
+      "url": "https://acadianmaple.com/collections/maple-syrup",
+      "mode": "scheduled",
+      "anchors": [
+        "Our Canadian pure maple syrup comes from the sugar woods of Nova Scotia"
+      ]
+    },
+    {
+      "id": "mapleowner",
+      "name": "Acadian Maple · sourcing and company history",
+      "url": "https://acadianmaple.com/pages/acadian-maple-syrup",
+      "mode": "scheduled",
+      "anchors": [
+        "In 2019",
+        "Authentic Seacoast Company",
+        "100% Nova Scotia Maple"
+      ]
+    },
+    {
+      "id": "salt",
+      "name": "South Shore Sea Salt · Fleur de Sel",
+      "url": "https://shopseasalt.ca/products/fleur-de-sel",
+      "mode": "scheduled",
+      "anchors": [
+        "waters of St. Margaret’s Bay in Nova Scotia",
+        "handmade with care in small batches"
+      ]
+    },
+    {
+      "id": "hockey",
+      "name": "Ontario Made · Roustan hockey sticks",
+      "url": "https://supportontariomade.ca/explore-products/hockey-sticks",
+      "mode": "editorial",
+      "anchors": [
+        "Hockey Sticks",
+        "Roustan Hockey"
+      ]
+    },
+    {
+      "id": "scoreboard",
+      "name": "Ontario Made · Harris Time hockey scoreboard",
+      "url": "https://supportontariomade.ca/explore-products/hockey-scoreboard",
+      "mode": "editorial",
+      "anchors": [
+        "Hockey Scoreboard",
+        "Harris Time"
+      ]
+    },
+    {
+      "id": "ontario",
+      "name": "Ontario Made · program eligibility",
+      "url": "https://supportontariomade.ca/faq",
+      "mode": "editorial",
+      "anchors": [
+        "last substantial transformation in Ontario"
+      ]
+    },
+    {
+      "id": "rogers",
+      "name": "Rogers Foods · Steel Cut Oat Blend Porridge Oats",
+      "url": "https://rogersfoods.com/shop/retail-products/porridge-oats-steel-cut-oat-blend/",
+      "mode": "scheduled",
+      "anchors": [
+        "Steel Cut Oat Blend Porridge Oats",
+        "Product of Canada."
+      ]
+    },
+    {
+      "id": "mills",
+      "name": "Rogers Foods · British Columbia mills",
+      "url": "https://rogersfoods.com/about-us/",
+      "mode": "scheduled",
+      "anchors": [
+        "mills in both Armstrong and Chilliwack"
+      ]
+    },
+    {
+      "id": "veritas",
+      "name": "Lee Valley · Veritas Low-Angle Block Plane",
+      "url": "https://www.leevalley.com/en-ca/shop/tools/hand-tools/planes/block/47881-veritas-low-angle-block-plane",
+      "mode": "scheduled",
+      "anchors": [
+        "Veritas Low-Angle Block Plane Made in Canada"
+      ]
+    },
+    {
+      "id": "cfia",
+      "name": "Canadian Food Inspection Agency · food origin claims",
+      "url": "https://inspection.canada.ca/en/food-labels/labelling/industry/origin-claims",
+      "mode": "scheduled",
+      "anchors": [
+        "all or virtually all major ingredients",
+        "last substantial transformation",
+        "qualifying statement"
+      ]
+    },
+    {
+      "id": "bureau",
+      "name": "Competition Bureau · non-food origin claims",
+      "url": "https://competition-bureau.canada.ca/en/how-we-foster-competition/education-and-outreach/publications/product-canada-and-made-canada-claims",
+      "mode": "scheduled",
+      "anchors": [
+        "at least 98%",
+        "at least 51%",
+        "qualifying statement"
+      ]
+    },
+    {
+      "id": "gs1",
+      "name": "GS1 · barcode prefixes",
+      "url": "https://support.gs1.org/support/solutions/articles/43000734188",
+      "mode": "scheduled",
+      "anchors": [
+        "does not indicate that the product was manufactured in a specific country"
+      ]
+    },
+    {
+      "id": "lee-valley",
+      "name": "Lee Valley Tools · company ownership",
+      "url": "https://www.leevalley.com/en-ca/aboutus",
+      "mode": "scheduled",
+      "anchors": [
+        "Lee Valley is a family-owned Canadian business"
+      ]
+    }
+  ]
+}

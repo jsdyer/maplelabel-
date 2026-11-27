@@ -36,7 +36,7 @@ jobs:
           python3 - <<'PY'
           import json, os
           tool_id = json.load(open('tool.json'))['id']
-          ready = tool_id != 'coolcode-tool-template' and tool_id == os.environ['REPOSITORY_NAME']
+          ready = tool_id == 'maplelabel' and os.environ['REPOSITORY_NAME'] in ('maplelabel', 'maplelabel-')
           with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
               output.write(f'publish={str(ready).lower()}\n')
           PY

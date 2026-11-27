@@ -1,0 +1,43 @@
+name: Check product-origin sources
+on:
+  schedule:
+    - cron: '26 13 6 * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: maple-label-source-check
+  cancel-in-progress: false
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Check published origin wording
+        id: collect
+        continue-on-error: true
+        run: python3 scripts/check_sources.py
+      - name: Validate saved product evidence
+        run: |
+          python3 -m unittest discover -s tests -v
+          python3 scripts/build.py
+      - name: Publish the source-check receipt
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git add web/data/status.json
+          if ! git diff --cached --quiet; then
+            git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'Record product-origin source check'
+            git push origin HEAD:main
+          fi
+          gh workflow run pages.yml --ref main
+      - name: Signal sources needing editorial review
+        if: steps.collect.outcome == 'failure'
+        run: exit 1

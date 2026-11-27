@@ -7,7 +7,8 @@ import re
 def add_search_metadata(page, tool, *, category="UtilitiesApplication", datasets=()):
     slug = tool["id"]
     on_coolcode = (slug != "coolcode-tool-template"
-                  and tool["source"].rstrip("/") == f"https://github.com/jsdyer/{slug}")
+                  and (tool["source"].rstrip("/") == f"https://github.com/jsdyer/{slug}"
+                       or (slug == "maplelabel" and tool["source"].rstrip("/") == "https://github.com/jsdyer/maplelabel-")))
     canonical = "https://coolcode.ca" + tool["url"] if on_coolcode else None
     title = re.search(r"<title>(.*?)</title>", page, re.S)
     if not title or page.count("</head>") != 1:

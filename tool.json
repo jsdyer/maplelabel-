@@ -1,16 +1,47 @@
 {
-  "id": "coolcode-tool-template",
-  "title": "CoolCode Tool Starter",
-  "description": "A browser-only example that trims lines and removes exact duplicates.",
-  "category": "security",
-  "tags": ["text", "lines", "duplicates"],
-  "icon": "scan-search",
-  "url": "/coolcode-tool-template/",
-  "source": "https://github.com/jsdyer/coolcode-tool-template",
+  "id": "maplelabel",
+  "title": "Maple Label",
+  "description": "Compare Canadian origin claims on named products and see what the sources say about ingredients, manufacturing and ownership.",
+  "task_label": "Made in Canada Finder",
+  "category": "explorers",
+  "tags": [
+    "Canada",
+    "shopping",
+    "product origin",
+    "food labels",
+    "manufacturing",
+    "local products"
+  ],
+  "icon": "badge-check",
+  "url": "/maplelabel/",
+  "source": "https://github.com/jsdyer/maplelabel-",
   "hosting": "project",
   "access": "browser",
+  "result_directory": {
+    "path": "records/",
+    "title": "Canadian product-origin records and label criteria"
+  },
+  "dataset": {
+    "title": "Canadian product-origin claims and sources",
+    "file": "data/catalogue.json",
+    "format": "JSON"
+  },
   "data_info": {
-    "mode": "local",
-    "detail": "The browser reads the text you paste and compares its lines."
+    "mode": "snapshot",
+    "cadence": "Monthly",
+    "detail": "Named products, producer statements and regional program listings are reviewed individually. Monthly checks test selected source wording, with manual sources and review dates identified.",
+    "probes": [
+      {
+        "label": "Monitored source wording last matched",
+        "url": "https://coolcode.ca/maplelabel/data/status.json",
+        "path": ["checked_at"],
+        "count_at": { "path": ["product_count"], "unit": "products" }
+      },
+      {
+        "label": "Product evidence reviewed",
+        "url": "https://coolcode.ca/maplelabel/data/status.json",
+        "path": ["reviewed_at"]
+      }
+    ]
   }
 }
