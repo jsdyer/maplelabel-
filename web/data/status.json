@@ -5,5 +5,8 @@
   "product_count": 10,
   "scheduled_sources": 17,
   "editorial_sources": 3,
-  "needs_review": []
+  "needs_review": [
+    "veritas",
+    "lee-valley"
+  ]
 }
