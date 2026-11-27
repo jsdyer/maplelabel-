@@ -154,6 +154,10 @@ def build(root=ROOT):
             p=products[item['id']]
             compare_body+='<article class="card"><h2>'+a('../'+p['id']+'/',p['name'])+'</h2><p class="origin-label">'+e(p['claim'])+'</p>'+field_list(p)+links(p,sources,status)+'</article>'
         compare_body+='</div><p>'+a('../../?product='+first['id']+'&compare='+second['id']+'#comparison','Compare these or choose other products','action')+'</p>'+context
+        compare_body += ('<section><h2>How does green coffee reach Canada?</h2><p>'
+                         + a('https://coolcode.ca/importtrail/records/hs-090111/', 'Explore Canadian imports of unroasted coffee')
+                         + ' to see which companies appear in the federal trade data. The figures cover the Canadian market as a whole. '
+                         + 'The espresso’s product record identifies where the beans were roasted.</p></section>')
         publish('records/quebec-cheese-and-coffee/','OKA cheese and Laval-roasted espresso compared','What is local in cheese and coffee?','OKA Original’s Québec certification covers its main ingredients. Hortus espresso’s certification covers processing, and its listing identifies the roasting location as Laval.',compare_body)
         definitions=''
         for rule in rules.values():
