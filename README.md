@@ -18,7 +18,7 @@ Edit `web/data/catalogue.json`. Add a unique product ID, the precise claim, its 
 
 The checker is scheduled for the sixth of every month at 13:26 UTC. It can also be run manually. It checks selected text on program, official and producer pages, including image alternative text where a claim appears as a label. It detects missing or changed wording, without reinterpreting new claims or dates. Ontario Made records and eligibility currently require editorial review because the public site restricts automated requests. These sources are labelled editorial in each affected record. The product evidence review and the last successful automated check have separate dates.
 
-A failed fetch or changed anchor preserves the product records and the previous full-check date. The status receipt identifies sources requiring review and the check workflow signals failure after publishing that receipt. Review the source document and package specifics before changing an anchor, label or interpretation. Retrying a failed dispatch on the same day can publish the repaired receipt.
+A failed fetch or changed anchor preserves the product records and the previous full-check date. The status receipt identifies sources requiring review and the check workflow signals failure after saving that receipt to the source repository. Review the source document and package specifics before changing an anchor, label or interpretation. A successful retry can replace the receipt on the same day.
 
 ```sh
 python3 scripts/check_sources.py
@@ -28,4 +28,8 @@ python3 scripts/build.py
 python3 -m http.server 8000 --directory dist
 ```
 
-To run the browser journey, install `tests/browser-requirements.txt` and Playwright Chromium, then run `python3 tests/browser_smoke.py`. The build reads the saved data offline. The Pages workflow automatically builds, tests and deploys main. The public JSON in `data/catalogue.json` contains the product fields, rules, references and proof anchors. `data/status.json` publishes the review date, check status and product count without personal data.
+To run the browser journey, install `tests/browser-requirements.txt` and Playwright Chromium, then run `python3 tests/browser_smoke.py`. The build reads the saved data offline. The public JSON in `data/catalogue.json` contains the product fields, rules, references and proof anchors. `data/status.json` provides the review date, check status and product count without personal data.
+
+## Publication
+
+The source repository is [jsdyer/maplelabel](https://github.com/jsdyer/maplelabel). Its Pages workflow builds the site, runs unit and browser tests and retains a preview artifact for pushes to main, pull requests and manual dispatches. Successful main builds deploy to [Maple Label](https://coolcode.ca/maplelabel/) through GitHub Pages. The monthly check dispatches the same publication workflow after recording the source status.

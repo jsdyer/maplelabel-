@@ -28,15 +28,15 @@ jobs:
         run: python3 -m unittest discover -s tests -v
       - name: Build the static application
         run: python3 scripts/build.py
-      - name: Check whether the tool has been initialized
+      - name: Select the native Pages publication repository
         id: identity
         env:
-          REPOSITORY_NAME: ${{ github.event.repository.name }}
+          REPOSITORY: ${{ github.repository }}
         run: |
           python3 - <<'PY'
           import json, os
           tool_id = json.load(open('tool.json'))['id']
-          ready = tool_id == 'maplelabel' and os.environ['REPOSITORY_NAME'] in ('maplelabel', 'maplelabel-')
+          ready = tool_id == 'maplelabel' and os.environ['REPOSITORY'] == 'jsdyer/maplelabel'
           with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
               output.write(f'publish={str(ready).lower()}\n')
           PY

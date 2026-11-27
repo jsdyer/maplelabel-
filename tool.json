@@ -14,7 +14,7 @@
   ],
   "icon": "badge-check",
   "url": "/maplelabel/",
-  "source": "https://github.com/jsdyer/maplelabel-",
+  "source": "https://github.com/jsdyer/maplelabel",
   "hosting": "project",
   "access": "browser",
   "result_directory": {
